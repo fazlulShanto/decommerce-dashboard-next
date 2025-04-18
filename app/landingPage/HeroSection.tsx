@@ -21,6 +21,9 @@ export const HeroSection = () => {
           <Button size="lg" className="bg-primary text-md font-semibold hover:bg-primary/90" onClick={handleGetStarted}>
             Get Started Free
           </Button>
+          <Button variant="outline" size="lg" className="bg-transparent border-white/40 hover:bg-white/10 text-md font-semibold" onClick={handleGetStarted}>
+            Join Support Server
+          </Button>
 
         </div>
         
