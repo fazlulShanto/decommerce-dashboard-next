@@ -1,8 +1,13 @@
 
 import { Button } from "@/components/ui/button";
+import { DISCORD_BOT_INVITE } from "@/lib/constants";
 import { ShoppingBag, BarChart, CreditCard, LucideListOrdered } from "lucide-react";
 
 export const HeroSection = () => {
+  const handleGetStarted = () => {
+    window.open(DISCORD_BOT_INVITE, "_blank");
+  };    
+
   return (
     <div className="pt-32 pb-20 text-center relative overflow-hidden">
       <div className="container mx-auto px-4">
@@ -13,7 +18,7 @@ export const HeroSection = () => {
           Create and manage your store, handle products, process orders, and track sales - all within Discord. Start selling in minutes!
         </p>
         <div className="flex flex-wrap justify-center gap-4">
-          <Button size="lg" className="bg-primary text-md font-semibold hover:bg-primary/90">
+          <Button size="lg" className="bg-primary text-md font-semibold hover:bg-primary/90" onClick={handleGetStarted}>
             Get Started Free
           </Button>
 

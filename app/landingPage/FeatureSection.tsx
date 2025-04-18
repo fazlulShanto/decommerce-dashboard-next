@@ -1,6 +1,5 @@
-
 import { Card } from "@/components/ui/card";
-import { Store, Package, Users, DollarSign, LineChart, Lock } from "lucide-react";
+import { Store, Package, Users, DollarSign, LineChart, Lock, ChartNoAxesColumn, ChartNoAxesCombined } from "lucide-react";
 
 export const FeatureSection = () => {
   const features = [
@@ -20,14 +19,14 @@ export const FeatureSection = () => {
       description: "Let customers browse your products and place orders directly through Discord.",
     },
     {
-      icon: DollarSign,
-      title: "Multiple Currencies",
-      description: "Support for multiple currencies to serve customers worldwide.",
+      icon: ChartNoAxesCombined,
+      title: "Tracking System",
+      description: "Track your orders and deliveries with a simple commands, both for you and your customers.",
     },
     {
       icon: LineChart,
       title: "Sales Analytics",
-      description: "Track orders and analyze your sales performance with detailed statistics. Web Dashboard is available for more detailed analytics.",
+      description: "Analyze your sales performance with detailed statistics. Web Dashboard is available for more detailed analytics.",
     },
     {
       icon: Lock,
@@ -37,7 +36,7 @@ export const FeatureSection = () => {
   ];
 
   return (
-    <div className="py-20 bg-muted">
+    <div id="features" className="py-20 bg-muted">
       <div className="container mx-auto px-4">
         <h2 className="text-4xl font-bold text-white text-center mb-12">
           Everything You Need to <span className="text-primary">Sell on Discord</span>
@@ -55,3 +54,5 @@ export const FeatureSection = () => {
     </div>
   );
 };
+
+
