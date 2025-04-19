@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { MessageSquare, Github, Twitter, Mail, Heart } from "lucide-react";
+import {  Github, Twitter, Mail } from "lucide-react";
 import { DISCORD_BOT_INVITE, DISCORD_SUPPORT_SERVER_INVITE } from "@/lib/constants";
+import Image from "next/image";
+import logo from "@/public/icon-256.png";
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -11,8 +13,8 @@ export const Footer = () => {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <MessageSquare className="w-6 h-6 text-primary" />
+            <div className="flex flex-col">
+              <Image src={logo} alt="DeCommerce Logo" className="size-20" />
               <span className="text-lg font-bold text-white">DeCommerce</span>
             </div>
             <p className="text-white/70 text-sm">

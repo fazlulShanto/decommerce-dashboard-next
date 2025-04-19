@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { DISCORD_BOT_INVITE } from "@/lib/constants";
-import { MessageSquare, Menu, X } from "lucide-react";
+import {  Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
+import logo from "@/public/icon-256.png";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -56,7 +58,7 @@ export const Navbar = () => {
     >
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-2">
-          <MessageSquare className="w-8 h-8 text-primary" />
+          <Image src={logo} alt="DeCommerce Logo" className="size-20" />
           <span className="text-xl font-bold text-white">DeCommerce</span>
         </div>
 

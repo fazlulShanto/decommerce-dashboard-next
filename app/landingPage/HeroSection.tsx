@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { DISCORD_BOT_INVITE } from "@/lib/constants";
 import { ShoppingBag, BarChart, CreditCard, LucideListOrdered } from "lucide-react";
@@ -9,9 +8,9 @@ export const HeroSection = () => {
   };    
 
   return (
-    <div className="pt-32 pb-20 min-h-screen text-center relative overflow-hidden">
+    <section className="pt-32 pb-20 min-h-screen text-center relative overflow-hidden" aria-labelledby="hero-heading">
       <div className="container mx-auto px-4">
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+        <h1 id="hero-heading" className="text-5xl md:text-6xl font-bold text-white mb-6">
           Your Complete <span className="text-primary">Discord eCommerce</span> Solution
         </h1>
         <p className="text-xl text-white/70 mb-8 max-w-2xl mx-auto">
@@ -27,32 +26,35 @@ export const HeroSection = () => {
 
         </div>
         
-        <div className="mt-20 sm:mt-28 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-          {[
-            {
-              icon: ShoppingBag,
-              title: "Easy Setup",
-              description: "Setup your store and add products in minutes"
-            },
-            {
-              icon: BarChart,
-              title: "Sales Analytics",
-              description: "Track your orders and analyze performance"
-            },
-            {
-              icon: CreditCard,
-              title: "Payments Details",
-              description: "Multiple payment methods supported"
-            }
-          ].map((feature, index) => (
-            <div key={index} className="p-6 rounded-xl bg-card border border-white/10 animate-float" style={{ animationDelay: `${index * 0.2}s` }}>
-              <feature.icon className="w-10 h-10 text-primary mb-4 mx-auto" />
-              <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-              <p className="text-white/70">{feature.description}</p>
-            </div>
-          ))}
-        </div>
+        <section aria-labelledby="features-heading" className="mt-20 sm:mt-28">
+          <h2 id="features-heading" className="sr-only">Key Features</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {[
+              {
+                icon: ShoppingBag,
+                title: "Easy Setup",
+                description: "Setup your store and add products in minutes"
+              },
+              {
+                icon: BarChart,
+                title: "Sales Analytics",
+                description: "Track your orders and analyze performance"
+              },
+              {
+                icon: CreditCard,
+                title: "Payments Details",
+                description: "Multiple payment methods supported"
+              }
+            ].map((feature, index) => (
+              <article key={index} className="p-6 rounded-xl bg-card border border-white/10 animate-float" style={{ animationDelay: `${index * 0.2}s` }}>
+                <feature.icon className="w-10 h-10 text-primary mb-4 mx-auto" aria-hidden="true" />
+                <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
+                <p className="text-white/70">{feature.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
       </div>
-    </div>
+    </section>
   );
 };
