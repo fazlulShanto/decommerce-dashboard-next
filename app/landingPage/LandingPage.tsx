@@ -4,6 +4,7 @@ import { PricingSection } from "./Pricing";
 import { FeatureSection } from "./FeatureSection";  
 import CustomerJourney from "./CustomerJourney";
 import TestimonialSection from "./Testimonial";
+import { Footer } from "./Footer";
 
 export const LandingPage = () => {
   return (
@@ -14,6 +15,7 @@ export const LandingPage = () => {
       <CustomerJourney />
       <TestimonialSection />
       <PricingSection />
+      <Footer />
     </div>
   );
 };
