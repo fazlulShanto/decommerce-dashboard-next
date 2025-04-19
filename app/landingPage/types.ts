@@ -8,6 +8,12 @@ export type Command = {
   details?: string;
 };
 
+// Extended command type with category information
+export type ExtendedCommand = Command & {
+  categoryKey: string;
+  categoryTitle: string;
+};
+
 export type CommandCategory = {
   title: string;
   description: string;

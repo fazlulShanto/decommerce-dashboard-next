@@ -29,7 +29,7 @@ export const CommandTabs = ({ categories, commandsData, searchQuery }: CommandTa
                 <TabsTrigger 
                   key={category} 
                   value={category}
-                  className="px-4 py-2 rounded-t-lg data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-medium flex-shrink-0 whitespace-nowrap"
+                  className="px-4 py-2 rounded-t-lg data-[state=active]:border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary data-[state=active]:font-medium sm:flex-shrink-0 sm:whitespace-nowrap"
                 >
                   {commandsData[category].title}
                 </TabsTrigger>

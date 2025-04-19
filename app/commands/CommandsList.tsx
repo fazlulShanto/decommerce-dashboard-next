@@ -1,21 +1,23 @@
+'use client'
 import { useState } from 'react';
 import { faqData } from '@/lib/faqData';
-import { FAQData } from './types';
 import { SearchBar } from './components/SearchBar';
-import { CommandTabs } from './components/CommandTabs';
+import { CommandFilter } from './components/CommandFilter';
 import { PremiumFeaturesComponent } from './components/PremiumFeatures';
 
-const FAQ = () => {
+const CommandsList = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const commandCategories = Object.keys(faqData.commands);
 
   return (
-    <div id="faq" className="bg-zinc-950/50 mx-auto py-10 px-4 ">
+    <div id="commands" className="bg-zinc-800/50 mx-auto py-10 px-4 ">
         <div className="container mx-auto">
 
-    
       <div className="text-center mb-10">
-        <h1 className="text-4xl font-bold mb-4">Command Documentation</h1>
+        <h1 className="text-4xl font-bold mb-4">
+           <span className="text-primary">DeCommerce</span>{" "}
+           Command Documentation
+        </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Browse through our available commands or search for specific functionality
         </p>
@@ -23,7 +25,7 @@ const FAQ = () => {
 
       <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       
-      <CommandTabs 
+      <CommandFilter 
         categories={commandCategories} 
         commandsData={faqData.commands as any} 
         searchQuery={searchQuery} 
@@ -35,4 +37,4 @@ const FAQ = () => {
   );
 };
 
-export default FAQ;
+export default CommandsList;

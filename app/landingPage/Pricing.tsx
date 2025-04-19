@@ -41,7 +41,7 @@ export const PricingSection = () => {
         </ul>
         <Button
           onClick={handleGetStarted}
-          className="absolute bottom-8 w-4/5 left-1/2 -translate-x-1/2 bg-white/10 hover:bg-white/20"
+          className="sm:absolute w-full mt-8 mx-auto sm:bottom-8 sm:w-4/5 sm:left-1/2 sm:-translate-x-1/2 bg-white/10 hover:bg-white/20"
         >
           Start Trial
         </Button>
@@ -84,7 +84,7 @@ export const PricingSection = () => {
         </ul>
         <Button
           onClick={handleJoinSupportServer}
-          className="w-full bg-primary hover:bg-primary/90"
+          className="w-full bg-primary font-semibold hover:bg-primary/90"
         >
           Get Premium
         </Button>

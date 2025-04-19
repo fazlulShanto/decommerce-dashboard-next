@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { DISCORD_BOT_INVITE } from "@/lib/constants";
 import { MessageSquare, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -75,13 +76,14 @@ export const Navbar = () => {
           >
             Pricing
           </Button>
+          <Link href="/commands">
           <Button
             variant="ghost"
             className="text-white/70 hover:bg-white/10 hover:text-white w-full justify-start"
-            onClick={scrollToCommands}
           >
-            View Commands
-          </Button>
+              View Commands
+            </Button>
+          </Link>
 
           <Button
             className="bg-primary hover:bg-primary/90 text-white"
