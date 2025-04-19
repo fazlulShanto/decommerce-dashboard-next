@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { DISCORD_BOT_INVITE } from "@/lib/constants";
+import { DISCORD_BOT_INVITE, DISCORD_SUPPORT_SERVER_INVITE } from "@/lib/constants";
 import { ShoppingBag, BarChart, CreditCard, LucideListOrdered } from "lucide-react";
-
+import Link from "next/link";
 export const HeroSection = () => {
   const handleGetStarted = () => {
     window.open(DISCORD_BOT_INVITE, "_blank");
@@ -20,9 +20,11 @@ export const HeroSection = () => {
           <Button size="lg" className="bg-primary text-md font-semibold hover:bg-primary/90" onClick={handleGetStarted}>
             Get Started Free
           </Button>
-          <Button variant="outline" size="lg" className="bg-transparent border-white/40 hover:bg-white/10 text-md font-semibold" onClick={handleGetStarted}>
-            Join Support Server
-          </Button>
+          <Link href={DISCORD_SUPPORT_SERVER_INVITE} target="_blank">
+            <Button variant="outline" size="lg" className="bg-transparent border-white/40 hover:bg-white/10 text-md font-semibold">
+              Join Support Server
+            </Button>
+          </Link>
 
         </div>
         
