@@ -9,7 +9,7 @@ export const HeroSection = () => {
   };    
 
   return (
-    <div className="pt-32 pb-20 text-center relative overflow-hidden">
+    <div className="pt-32 pb-20 min-h-screen text-center relative overflow-hidden">
       <div className="container mx-auto px-4">
         <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
           Your Complete <span className="text-primary">Discord eCommerce</span> Solution
@@ -27,7 +27,7 @@ export const HeroSection = () => {
 
         </div>
         
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+        <div className="mt-20 sm:mt-28 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
           {[
             {
               icon: ShoppingBag,
