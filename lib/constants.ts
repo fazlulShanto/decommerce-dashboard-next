@@ -1,2 +1,2 @@
 export const DISCORD_SUPPORT_SERVER_INVITE = "https://discord.gg/ybwcattdK5";
-export const DISCORD_BOT_INVITE = "https://discord.com/oauth2/authorize?client_id=1359195832909431026&permissions=8&scope=bot";
+export const DISCORD_BOT_INVITE = "https://discord.com/oauth2/authorize?client_id=1359195832909431026&permissions=826781330512&scope=bot";
