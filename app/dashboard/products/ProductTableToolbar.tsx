@@ -1,6 +1,6 @@
 import { Plus, Search, ToggleLeft, Trash, User, X } from "lucide-react";
-import { FC, useState } from "react";
-
+import { FC, useEffect, useState } from "react";
+import { useQueryState } from "nuqs";
 import {
   MultiSelect,
   MultiSelectOptionBadgeView,
@@ -12,20 +12,15 @@ import { TooltipProviderCustomised } from "@/components/ui/tooltip";
 import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { Product } from "./product-columns";
+import { type Product } from "./product-columns";
+import { useReactTable } from "@tanstack/react-table";
 
 interface AgentTableToolbarProps {
-  rowSelection: Record<string, boolean>;
-  onClearRowSelection: () => void;
-  handleBulkDelete: () => Promise<boolean>;
+  table: ReturnType<typeof useReactTable<Product>>;
 }
 
-export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({
-  rowSelection,
-  onClearRowSelection,
-  handleBulkDelete,
-}) => {
-  const isSelectionMode = !!Object.keys(rowSelection).length;
+export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table }) => {
+  const isSelectionMode = !!Object.keys({}).length;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -59,45 +54,6 @@ export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({
     }
   };
 
-  const renderSearchInput = () => {
-    return (
-      <div className="flex items-center gap-2 relative">
-        <Search className="w-4 h-4 absolute transform -translate-y-1/2 ltr:left-2 rtl:right-2 top-1/2 text-textPrimary-disable" />
-        <Input
-          placeholder={"Search"}
-          //   value={filterState?.search ?? ""}
-          className="ltr:pl-7 rtl:pr-7 h-8 m-0 w-[290px]"
-          onChange={
-            (event) => null
-            // setFilterState({ ...filterState, search: event.target.value })
-          }
-        />
-      </div>
-    );
-  };
-
-  const handleTemplateFilter = (agents: Product[]) => {
-    // setFilterState((old) => ({ ...old, agents: agents }));
-  };
-
-  const renderClearFilterButton = () => {
-    // const hasOtherFilters =
-    //   !!filterState?.agents?.length || !!filterState?.status?.length;
-    // const isSearchApplied = !!filterState?.search?.length;
-
-    // if (!hasOtherFilters) return null;
-    return (
-      <Button
-        className="bg-background-hover h-8 gap-1 text-xs"
-        variant={"ghost"}
-        onClick={() => {}}
-      >
-        <X className="w-4 h-4" />
-        {"Clear Filters"}
-      </Button>
-    );
-  };
-
   const renderBulkDeleteOption = () => {
     return (
       <div className="flex gap-2 items-center">
@@ -113,7 +69,7 @@ export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({
           variant={"outline"}
           size={"sm"}
           className="gap-2 text-textPrimary"
-          onClick={onClearRowSelection}
+          // onClick={onClearRowSelection}
         >
           <span>{"Cancel"}</span>
         </Button>
@@ -124,11 +80,6 @@ export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({
   return (
     <div className="flex flex-col gap-2">
       <div className="w-full flex items-center justify-between">
-        <div className="flex gap-3">
-          {renderSearchInput()}
-          {renderClearFilterButton()}
-        </div>
-
         <div>{renderBulkDeleteOption()}</div>
       </div>
 

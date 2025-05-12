@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export const metadata: Metadata = {
   title: "Decommerce Bot Dashboard",
@@ -73,7 +74,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="dark">
-        {children}
+        <NuqsAdapter>{children}</NuqsAdapter>
         <SpeedInsights />
       </body>
     </html>

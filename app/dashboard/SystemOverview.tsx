@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import MetricCard from "@/components/MetricCard";
 import { useState } from "react";
 
-export default function SystemOverview() {
+export default function SystemOverview({ storeName }: { storeName: string }) {
   const [cpuUsage, setCpuUsage] = useState(42);
   const [memoryUsage, setMemoryUsage] = useState(68);
   const [networkStatus, setNetworkStatus] = useState(92);
@@ -22,7 +22,10 @@ export default function SystemOverview() {
         <div className="flex items-center justify-between">
           <CardTitle className="text-slate-100 flex items-center">
             <ShoppingBasket className="mr-2 h-5 w-5 text-cyan-500" />
-            Name Store Overview
+            <span className="bg-gradient-to-r bg-clip-text text-transparent from-cyan-400 to-green-500 mr-2">
+              {storeName}
+            </span>{" "}
+            store Overview
           </CardTitle>
           <div className="flex items-center space-x-2">
             <Badge
