@@ -6,8 +6,6 @@ import { ProductDAL, ProductModel } from "@/models/product.dal";
 export async function GET(request: NextRequest) {
   try {
     await connectToDatabase();
-    console.log("🟥cookie", request.headers.get("x-token-info"));
-    console.log("fetching products", (await cookies()).getAll());
     const guildId = request.nextUrl.searchParams.get("id");
     if (!guildId) {
       return NextResponse.json(
@@ -16,7 +14,7 @@ export async function GET(request: NextRequest) {
           message: "Guild ID is required",
           guildId,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const products = await ProductDAL.getProductsByGuildId(guildId);
@@ -26,7 +24,7 @@ export async function GET(request: NextRequest) {
     console.error("Database connection failed:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch products" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

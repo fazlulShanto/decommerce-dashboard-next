@@ -82,6 +82,26 @@ export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table }) => {
       <div className="w-full flex items-center justify-between">
         <div>{renderBulkDeleteOption()}</div>
       </div>
+
+      {/* <DeleteAlert
+        open={isDeleteModalOpen}
+        onOpenChange={setIsDeleteModalOpen}
+        title={t(
+          `Delete {{${Object.keys(rowSelection).length}}} Custom Agent?`
+        )}
+        description={
+          <p className="text-sm text-textSecondary">
+            {t(
+              `This will permanently delete {{${
+                Object.keys(rowSelection).length
+              }}} custom agents that you have selected. Are you sure you want to delete?`
+            )}
+          </p>
+        }
+        onCancel={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDelete}
+        isConfirming={isDeleting}
+      /> */}
     </div>
   );
 };

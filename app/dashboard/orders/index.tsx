@@ -9,15 +9,16 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Product, productTableColumns } from "./product-columns";
+import { productTableColumns } from "./product-columns";
 import React from "react";
 
 import { ProductTableToolbar } from "./ProductTableToolbar";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useQueryState } from "nuqs";
+import { OrderData } from "@/models/order.dal";
 
-export default function StoreProductTable({ data }: { data: Product[] }) {
+export default function StoreOrdersTable({ data }: { data: OrderData[] }) {
   const [filterText, setFilterText] = useQueryState("q", {
     defaultValue: "",
     clearOnDefault: false,
@@ -39,6 +40,7 @@ export default function StoreProductTable({ data }: { data: Product[] }) {
     },
     columns: productTableColumns,
     data: data,
+    getRowId: (row) => row?._id,
     enableRowSelection: true,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -70,7 +72,7 @@ export default function StoreProductTable({ data }: { data: Product[] }) {
     <div className="mt-3 flex flex-col gap-3 rounded-lg">
       <div className="flex items-center justify-between">
         {renderSearchInput()}
-        {/* <ProductTableToolbar table={table} /> */}
+        <ProductTableToolbar table={table} />
       </div>
       <DataTable table={table} />
     </div>

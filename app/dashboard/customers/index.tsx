@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useQueryState } from "nuqs";
 
-export default function StoreProductTable({ data }: { data: Product[] }) {
+export default function StoreCustomerTable({ data }: { data: Product[] }) {
   const [filterText, setFilterText] = useQueryState("q", {
     defaultValue: "",
     clearOnDefault: false,
@@ -70,7 +70,7 @@ export default function StoreProductTable({ data }: { data: Product[] }) {
     <div className="mt-3 flex flex-col gap-3 rounded-lg">
       <div className="flex items-center justify-between">
         {renderSearchInput()}
-        {/* <ProductTableToolbar table={table} /> */}
+        <ProductTableToolbar table={table} />
       </div>
       <DataTable table={table} />
     </div>

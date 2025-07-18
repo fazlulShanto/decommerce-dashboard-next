@@ -1,7 +1,6 @@
-
-import mongoose from 'mongoose';
-import { z } from 'zod';
-import { customNanoid } from '@/lib/utils';
+import mongoose from "mongoose";
+import { z } from "zod";
+import { customNanoid } from "@/lib/utils";
 const orderSchema = new mongoose.Schema(
   {
     _id: { type: String, required: true, default: () => customNanoid() },
@@ -10,30 +9,32 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: { type: String, required: false },
     confirmationStatus: {
       type: String,
-      enum: ['pending', 'confirmed', 'cancelled'],
-      default: 'pending',
+      enum: ["pending", "confirmed", "cancelled"],
+      default: "pending",
     },
     deliveryStatus: {
       type: String,
-      enum: ['pending', 'processing', 'delivered', 'cancelled'],
-      default: 'pending',
+      enum: ["pending", "processing", "delivered", "cancelled"],
+      default: "pending",
     },
     paymentAmount: { type: Number, required: true },
     paymentStatus: {
       type: String,
-      enum: ['pending', 'completed', 'failed', 'refunded'],
-      default: 'pending',
+      enum: ["pending", "completed", "failed", "refunded"],
+      default: "pending",
     },
     guildId: { type: String, required: true },
     customerId: { type: String, required: true }, // Discord user ID
-    deliveryInfo: { type: String, required: false, default: '' },
+    deliveryInfo: { type: String, required: false, default: "" },
   },
   {
     timestamps: true,
   },
 );
 
-const OrderModel = mongoose.model<OrderDocument>('orders', orderSchema);
+const OrderModel =
+  mongoose.models.orders ||
+  mongoose.model<OrderDocument>("orders", orderSchema);
 
 // Interface for the document with Mongoose methods
 interface OrderDocument extends mongoose.Document {
@@ -41,10 +42,10 @@ interface OrderDocument extends mongoose.Document {
   productName: string;
   price: number;
   paymentMethod: string;
-  confirmationStatus: 'pending' | 'confirmed' | 'cancelled';
-  deliveryStatus: 'pending' | 'processing' | 'delivered' | 'cancelled';
+  confirmationStatus: "pending" | "confirmed" | "cancelled";
+  deliveryStatus: "pending" | "processing" | "delivered" | "cancelled";
   paymentAmount: number;
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'refunded';
+  paymentStatus: "pending" | "completed" | "failed" | "refunded";
   guildId: string;
   customerId: string; // Discord user ID
   createdAt: Date;
@@ -53,14 +54,20 @@ interface OrderDocument extends mongoose.Document {
 }
 
 // Interface for the data without Mongoose methods
-type OrderData = Omit<OrderDocument, keyof mongoose.Document | 'createdAt' | 'updatedAt'>;
+type OrderData = Omit<
+  OrderDocument,
+  keyof mongoose.Document | "createdAt" | "updatedAt"
+> & { _id: string };
 
 const OrderDAL = {
   createOrder: async (order: OrderData): Promise<OrderDocument> => {
     return OrderModel.create(order);
   },
 
-  updateOrder: async (id: string, updates: Partial<OrderData>): Promise<OrderDocument | null> => {
+  updateOrder: async (
+    id: string,
+    updates: Partial<OrderData>,
+  ): Promise<OrderDocument | null> => {
     return OrderModel.findByIdAndUpdate(id, updates, { new: true });
   },
 
@@ -72,7 +79,9 @@ const OrderDAL = {
     return OrderModel.find({ guildId });
   },
 
-  getOrdersByCustomerId: async (customerId: string): Promise<OrderDocument[]> => {
+  getOrdersByCustomerId: async (
+    customerId: string,
+  ): Promise<OrderDocument[]> => {
     return OrderModel.find({ customerId });
   },
 
@@ -83,15 +92,17 @@ const OrderDAL = {
     return OrderModel.find({ customerId, guildId });
   },
 
-  getOrdersByPaymentMethod: async (paymentMethod: string): Promise<OrderDocument[]> => {
+  getOrdersByPaymentMethod: async (
+    paymentMethod: string,
+  ): Promise<OrderDocument[]> => {
     return OrderModel.find({ paymentMethod });
   },
 
   getOrdersByStatus: async (
     status: {
-      confirmationStatus?: OrderDocument['confirmationStatus'];
-      deliveryStatus?: OrderDocument['deliveryStatus'];
-      paymentStatus?: OrderDocument['paymentStatus'];
+      confirmationStatus?: OrderDocument["confirmationStatus"];
+      deliveryStatus?: OrderDocument["deliveryStatus"];
+      paymentStatus?: OrderDocument["paymentStatus"];
     },
     guildId: string,
   ): Promise<OrderDocument[]> => {
@@ -101,20 +112,43 @@ const OrderDAL = {
   deleteOrder: async (id: string): Promise<OrderDocument | null> => {
     return OrderModel.findByIdAndDelete(id);
   },
+  deleteBulkOrderById: async (idsToDelete: [string]): Promise<string[]> => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
+    try {
+      const docs = await OrderModel.find({ _id: { $in: idsToDelete } }, "_id", {
+        session,
+      });
+      const foundIds: string[] = docs.map((doc) => doc._id);
+
+      await OrderModel.deleteMany({ _id: { $in: foundIds } }, { session });
+
+      await session.commitTransaction();
+      session.endSession();
+
+      return foundIds;
+    } catch (err) {
+      await session.abortTransaction();
+      session.endSession();
+      return [];
+    }
+  },
   deleteOrdersByGuildId: async (guildId: string) => {
     return OrderModel.deleteMany({ guildId });
   },
 };
 
 // Zod schema for order
-const confirmationStatusSchema = z.enum(['pending', 'confirmed', 'cancelled']).default('pending');
+const confirmationStatusSchema = z
+  .enum(["pending", "confirmed", "cancelled"])
+  .default("pending");
 const deliveryStatusSchema = z
-  .enum(['pending', 'processing', 'delivered', 'cancelled'])
-  .default('pending');
+  .enum(["pending", "processing", "delivered", "cancelled"])
+  .default("pending");
 const paymentStatusSchema = z
-  .enum(['pending', 'completed', 'failed', 'refunded'])
-  .default('pending');
+  .enum(["pending", "completed", "failed", "refunded"])
+  .default("pending");
 
 const OrderZodSchema = z.object({
   _id: z.string().min(1),
@@ -132,4 +166,10 @@ const OrderZodSchema = z.object({
   updatedAt: z.date().optional(),
 });
 
-export { OrderDAL, OrderModel, type OrderDocument, type OrderData, OrderZodSchema };
+export {
+  OrderDAL,
+  OrderModel,
+  type OrderDocument,
+  type OrderData,
+  OrderZodSchema,
+};
