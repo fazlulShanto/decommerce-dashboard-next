@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Send, Bot, User, Loader2, Info } from "lucide-react";
+import { Send, Bot, User, Loader2, Info, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -33,7 +33,7 @@ function parseMarkdownIntoBlocks(markdown: string): string[] {
 
 
 
-export default function ChatSheet() {
+export default function ChatSheet({ guildId }: { guildId?: string }) {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -65,6 +65,7 @@ export default function ChatSheet() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    guildId,
                     // Only send content and role to the backend to keep it clean
                     messages: newMessages.map((m) => ({
                         role: m.role,
@@ -131,18 +132,22 @@ export default function ChatSheet() {
                 </Button>
             </SheetTrigger>
             <SheetContent className="w-full sm:max-w-xl md:max-w-2xl flex flex-col p-0 bg-background/95 backdrop-blur-sm border-l border-border/50">
-                <SheetHeader className="p-6 border-b bg-muted/20">
-                    <SheetTitle className="flex items-center gap-2 text-xl tracking-tight">
-                        <Bot className="text-primary" />
-                        AI Agent Chat
-                    </SheetTitle>
-                    <p className="text-sm text-muted-foreground">
-                        Ask questions, look up knowledge, or generate dynamic content with the Qwen3 AI Agent.
-                    </p>
+                <SheetHeader className="p-4 border-b bg-muted/20">
+                    <div className="flex items-start justify-between">
+                        <div>
+                            <SheetTitle className="flex items-center gap-1.5 text-base font-semibold tracking-tight text-left">
+                                <Bot className="text-primary" size={16} />
+                                AI Agent Chat
+                            </SheetTitle>
+                            <p className="text-[12px] font-normal text-muted-foreground mt-0.5 text-left leading-tight">
+                                Ask questions, look up knowledge, or generate dynamic content with the AI Agent.
+                            </p>
+                        </div>
+                    </div>
                 </SheetHeader>
 
-                <ScrollArea className="flex-1 p-6">
-                    <div className="flex flex-col gap-6 w-full">
+                <ScrollArea className="flex-1 p-4">
+                    <div className="flex flex-col gap-4 w-full">
                         {messages.length === 0 && (
                             <div className="flex flex-col items-center justify-center h-full min-h-[50vh] space-y-4 text-center text-muted-foreground">
                                 <Bot size={64} className="opacity-20" />
@@ -168,7 +173,7 @@ export default function ChatSheet() {
                                 <div className={`flex flex-col max-w-[85%] ${message.role === "user" ? "items-end" : "items-start"}`}>
                                     {message.content && message.content.trim() !== "" && (
                                         <div
-                                            className={`rounded-2xl px-5 py-3 shadow-sm ${
+                                            className={`rounded-2xl px-4 py-2.5 shadow-sm text-sm ${
                                                 message.role === "user"
                                                     ? "bg-primary text-primary-foreground rounded-tr-sm"
                                                     : "bg-muted text-foreground rounded-tl-sm border"
@@ -200,9 +205,9 @@ export default function ChatSheet() {
                                     </div>
                                 </Avatar>
                                 <div className="flex flex-col items-start">
-                                    <div className="rounded-2xl px-5 py-3 shadow-sm bg-muted text-foreground rounded-tl-sm border flex items-center gap-3">
+                                    <div className="rounded-2xl px-4 py-2.5 shadow-sm bg-muted text-foreground rounded-tl-sm border flex items-center gap-3">
                                         <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                                        <p className="text-sm font-medium text-muted-foreground">Agent is thinking...</p>
+                                        <p className="text-[12px] font-normal text-muted-foreground">Agent is thinking...</p>
                                     </div>
                                 </div>
                             </div>
@@ -211,28 +216,43 @@ export default function ChatSheet() {
                     </div>
                 </ScrollArea>
 
-                <div className="p-4 bg-background/80 border-t backdrop-blur">
-                    <div className="flex gap-3">
-                        <Textarea
-                            placeholder="Type your message here..."
-                            className="min-h-[60px] max-h-[150px] flex-1 resize-none rounded-2xl bg-background px-4 py-3 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-primary"
-                            value={input}
-                            onChange={(e) => setInput(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            disabled={isLoading}
-                        />
+                <div className="p-2 pt-2 border-t/50 border-t bg-background/50 backdrop-blur">
+                    <div className="flex items-end gap-2">
+             
+                            <Textarea
+                                placeholder="Type your message here..."
+                                className="min-h-[44px] border border-primary/20 focus-within:border-primary/80 focus-within:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-1 resize-none bg-transparent px-4 py-2"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                disabled={isLoading}
+                            />
+              
                         <Button
                             size="icon"
-                            className="h-[60px] w-[60px] shrink-0 rounded-2xl shadow-md transition-transform active:scale-95"
+                            className="h-11 w-11 rounded-2xl shadow-sm transition-transform active:scale-95 bg-primary/90 hover:bg-primary hover:ring-1 text-primary-foreground shrink-0"
                             onClick={handleSendMessage}
                             disabled={isLoading || !input.trim()}
                         >
-                            {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                             <span className="sr-only">Send</span>
                         </Button>
                     </div>
-                    <div className="mt-2 text-center text-[10px] text-muted-foreground">
-                        Press <kbd className="pointer-events-none inline-flex h-4 select-none items-center gap-1 rounded border bg-muted px-1 font-mono font-medium text-muted-foreground opacity-100">Enter</kbd> to send, <kbd className="pointer-events-none inline-flex h-4 select-none items-center gap-1 rounded border bg-muted px-1 font-mono font-medium text-muted-foreground opacity-100">Shift</kbd> + <kbd className="pointer-events-none inline-flex h-4 select-none items-center gap-1 rounded border bg-muted px-1 font-mono font-medium text-muted-foreground opacity-100">Enter</kbd> to add a new line
+                    <div className="mt-2 flex items-center justify-between">
+                        <div className="text-[10px] text-muted-foreground">
+                            Press <kbd className="pointer-events-none inline-flex h-3.5 select-none items-center gap-1 rounded border bg-muted px-1 font-mono font-medium text-muted-foreground opacity-100">Enter</kbd> to send, <kbd className="pointer-events-none inline-flex h-3.5 select-none items-center gap-1 rounded border bg-muted px-1 font-mono font-medium text-muted-foreground opacity-100">Shift</kbd> + <kbd className="pointer-events-none inline-flex h-3.5 select-none items-center gap-1 rounded border bg-muted px-1 font-mono font-medium text-muted-foreground opacity-100">Enter</kbd> to add a new line
+                        </div>
+                        {messages.length > 0 && (
+                            <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                onClick={() => setMessages([])} 
+                                className="h-6 px-2 text-[10px] font-normal text-muted-foreground text-destructive hover:bg-destructive/90 shrink-0"
+                            >
+                                <Trash2 size={12} className="mr-1" />
+                                Clear Chat
+                            </Button>
+                        )}
                     </div>
                 </div>
             </SheetContent>

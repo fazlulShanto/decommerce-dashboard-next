@@ -3,7 +3,8 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
 import { generateEmbeddings, rerankDocuments } from "@/lib/embedding";
 import { searchVectors } from "@/lib/qdrant";
-
+import connectToDatabase from "@/lib/mongodb";
+import { AgentConfigDAL } from "@/models/aiAgentConfig.dal";
 // Define the Ollama provider using the Vercel AI SDK
 const ollamaProvider = createOpenAICompatible({
     name: "ollama",
@@ -90,9 +91,9 @@ const knowledgeLookupTool = tool({
 });
 export async function POST(req: Request) {
     try {
-        const { messages } = await req.json();
+        const { messages, guildId } = await req.json();
 
-        console.log("🛑Received messages from client:", messages);
+        // console.log("🛑Received messages from client:", messages);
 
         const parsedMessages = Array.isArray(messages)
             ? messages
@@ -106,10 +107,21 @@ export async function POST(req: Request) {
                   .filter(Boolean)
             : [];
 
-        console.log("✅Parsed messages after validation:", parsedMessages);
-        // The knowledge lookup tool configuration
+        // console.log("✅Parsed messages after validation:", parsedMessages);
 
-        const systemPrompt = `
+        await connectToDatabase();
+
+        let agentConfig = null;
+        if (guildId) {
+            agentConfig = await AgentConfigDAL.getOrCreateAgentConfig(guildId);
+            // console.log(
+            //     "✅Fetched agent config from DB:",
+            //     agentConfig.chatModel,
+            // );
+        }
+
+        // The knowledge lookup tool configuration
+        const defaultSystemPrompt = `
         You are a helpful AI assistant for the Decommerce dashboard.
         You have a tool called 'knowledge_look_up' to search the knowledge base. 
         - keep your responses concise and relevant to the user's query.
@@ -120,18 +132,21 @@ export async function POST(req: Request) {
         - don't not expose the internal workings of the tool or mention that it's a tool. Just use it when needed to find information and then respond to the user based on what you find.
         `;
 
+        const systemPrompt = agentConfig?.systemPrompt || defaultSystemPrompt;
+        const modelName = agentConfig?.chatModel || "qwen3-next:80b";
+        const temperature = agentConfig?.temperature ?? 0.5;
+
         // Fall back to a default prompt if the client sends no valid user message.
         const fullMessages = parsedMessages.length > 0 ? parsedMessages : [];
-        // Generate Text using qwen3-next:80b
+        // Generate Text using the dynamic model
         const result = await generateText({
-            // model: ollamaProvider("gpt-oss:120b"),
-            model: ollamaProvider("qwen3-next:80b"),
+            model: ollamaProvider(modelName),
             system: systemPrompt,
             messages: fullMessages as any,
             tools: {
                 knowledge_look_up: knowledgeLookupTool,
             },
-            temperature: 0.5,
+            temperature: temperature,
             stopWhen: stepCountIs(5),
         });
 

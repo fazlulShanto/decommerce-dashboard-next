@@ -23,7 +23,7 @@ export default function Header({ agentConfig, guildId }: HeaderProps) {
         {agentConfig && guildId && (
           <AgentConfigSheet config={agentConfig} guildId={guildId} />
         )}
-        <ChatSheet />
+        <ChatSheet guildId={guildId} />
         <Avatar className="border border-blue-400 hidden sm:block">
           <AvatarImage
             src="https://cdn.discordapp.com/embed/avatars/1.png"
