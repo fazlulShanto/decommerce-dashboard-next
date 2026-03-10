@@ -9,8 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.43",
     "@ai-sdk/openai-compatible": "^2.0.35",
     "@ai-sdk/react": "^3.0.118",
+    "@google/genai": "^1.44.0",
     "@hookform/resolvers": "^3.9.1",
     "@qdrant/js-client-rest": "^1.17.0",
     "@radix-ui/react-accordion": "^1.2.2",
@@ -54,6 +56,7 @@
     "input-otp": "1.4.1",
     "jose": "^6.0.11",
     "lucide-react": "^0.454.0",
+    "marked": "^17.0.4",
     "mongodb": "^6.16.0",
     "mongoose": "^8.14.2",
     "nanoid": "^5.1.5",
@@ -64,6 +67,7 @@
     "react-day-picker": "8.10.1",
     "react-dom": "^19.2.4",
     "react-hook-form": "^7.54.1",
+    "react-markdown": "^10.1.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "2.15.0",
     "sonner": "^1.7.1",

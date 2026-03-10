@@ -13,6 +13,8 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
+import { marked } from 'marked';
+import ReactMarkdown from 'react-markdown';
 
 type MessageRole = "user" | "assistant" | "system";
 
@@ -23,6 +25,13 @@ interface ChatMessage {
     toolCalls?: any[];
     toolResults?: any[];
 }
+
+function parseMarkdownIntoBlocks(markdown: string): string[] {
+  const tokens = marked.lexer(markdown);
+  return tokens.map(token => token.raw);
+}
+
+
 
 export default function ChatSheet() {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -165,9 +174,10 @@ export default function ChatSheet() {
                                                     : "bg-muted text-foreground rounded-tl-sm border"
                                             }`}
                                         >
-                                            <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">
+                                           <ReactMarkdown>{message.content}</ReactMarkdown>
+                                            {/* <p className="whitespace-pre-wrap leading-relaxed text-sm md:text-base">
                                                 {message.content}
-                                            </p>
+                                            </p> */}
                                         </div>
                                     )}
 

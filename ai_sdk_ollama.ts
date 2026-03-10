@@ -1,16 +1,17 @@
-import { generateText, stepCountIs, tool, userModelMessageSchema } from "ai";
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
-import { generateEmbeddings, rerankDocuments } from "@/lib/jina";
-import { searchVectors } from "@/lib/qdrant";
+import { generateText, tool, stepCountIs, userModelMessageSchema } from "ai";
 
-// Define the Ollama provider using the Vercel AI SDK
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { generateEmbeddings, rerankDocuments } from "./lib/jina";
+import { searchVectors } from "./lib/qdrant";
+
 const ollamaProvider = createOpenAICompatible({
     name: "ollama",
     apiKey: process.env.OLLAMA_KEY || "ollama", // Optional, depends on your auth
     baseURL: "https://ollama.com/v1/", // Ollama Cloud API
     includeUsage: true,
 });
+
 const knowledgeLookupTool = tool({
     description:
         "Search for knowledge, documents, and product context from the vector database. You MUST use this tool when users ask questions about specific items, store policies, or historical information.",
@@ -34,7 +35,7 @@ const knowledgeLookupTool = tool({
             console.log(
                 `[Tool: knowledge_look_up] Generating embedding for query: "${query}"`,
             );
-            const embeddings = await generateEmbeddings(query);
+            const embeddings = await generateEmbeddings(query, false);
 
             if (!embeddings || embeddings.length === 0) {
                 return {
@@ -89,71 +90,38 @@ const knowledgeLookupTool = tool({
         }
     },
 });
-export async function POST(req: Request) {
-    try {
-        const { messages } = await req.json();
 
-        console.log("🛑Received messages from client:", messages);
-
-        const parsedMessages = Array.isArray(messages)
-            ? messages
-                  .map((message) => {
-                      try {
-                          return userModelMessageSchema.parse(message);
-                      } catch {
-                          return null;
-                      }
-                  })
-                  .filter(Boolean)
-            : [];
-
-        console.log("✅Parsed messages after validation:", parsedMessages);
-        // The knowledge lookup tool configuration
-
-        const systemPrompt = `
+const main = async () => {
+    const systemPrompt = `
         You are a helpful AI assistant for the Decommerce dashboard.
         You have a tool called 'knowledge_look_up' to search the knowledge base. 
-        - keep your responses concise and relevant to the user's query.
-        - Always use the 'knowledge_look_up' tool when the user asks about specific products, store policies, or historical information.
-        - CRITICAL: When you use the 'knowledge_look_up' tool, you MUST ALWAYS provide the 'query' argument as a string summarizing the user's question. 
-        If you do not know the answer, use the knowledge tool with a specific search phrase. Always provide concise and helpful responses.
-        - never make up information. If you don't know, use the tool to find out, or say politely you don't know.
-        - don't not expose the internal workings of the tool or mention that it's a tool. Just use it when needed to find information and then respond to the user based on what you find.
-        `;
+        CRITICAL: When you use the 'knowledge_look_up' tool, you MUST ALWAYS provide the 'query' argument as a string summarizing the user's question. 
+        If you do not know the answer, use the knowledge tool with a specific search phrase. Always provide concise and helpful responses.`;
 
-        // Fall back to a default prompt if the client sends no valid user message.
-        const fullMessages = parsedMessages.length > 0 ? parsedMessages : [];
-        // Generate Text using qwen3-next:80b
-        const result = await generateText({
-            model: ollamaProvider("gpt-oss:120b"),
-            system: systemPrompt,
-            // model: ollamaProvider("qwen3-next:80b"),
-            messages: fullMessages as any,
-            tools: {
-                knowledge_look_up: knowledgeLookupTool,
-            },
-            temperature: 0.5,
-            stopWhen: stepCountIs(5),
-        });
+    // Ensure we start with system prompt
+    const fullMessages: any = [
+        userModelMessageSchema.parse({
+            role: "user",
+            content: "hi,what is the return policy",
+        }),
+    ];
 
-        return new Response(
-            JSON.stringify({
-                text: result.text,
-                // Pass back tool calls/results if needed by UI
-                toolCalls: result.toolCalls,
-                toolResults: result.toolResults,
-            }),
-            {
-                headers: { "Content-Type": "application/json" },
-            },
-        );
-    } catch (error: any) {
-        console.error("Chat API Error:", error);
-        return new Response(
-            JSON.stringify({
-                error: error.message || "An error occurred during generation",
-            }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-        );
-    }
-}
+    const result = await generateText({
+        model: ollamaProvider("gpt-oss:120b"),
+        system: systemPrompt,
+
+        tools: {
+            knowledge_look_up: knowledgeLookupTool,
+        },
+        messages: fullMessages,
+        stopWhen: stepCountIs(5),
+        // prompt: "hi,what is the return policy",
+    });
+
+    console.log("🏵️".repeat(20));
+    console.log("tool calls", result);
+    console.log("✅".repeat(20));
+    console.log(result.text);
+};
+
+main();

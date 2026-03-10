@@ -42,6 +42,7 @@ export function chunkText(text: string, maxLength: number = 800): string[] {
 
 export async function generateEmbeddings(
     text: string,
+    late_chunking = true,
 ): Promise<{ text: string; vector: number[] }[]> {
     const url = "https://api.jina.ai/v1/embeddings";
     const token = process.env.EMBEDDING_API_KEY;
@@ -57,7 +58,7 @@ export async function generateEmbeddings(
     const requestData = {
         model: "jina-embeddings-v5-text-small",
         task: "text-matching",
-        late_chunking: true,
+        late_chunking: late_chunking,
         input: chunks,
     };
 
