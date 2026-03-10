@@ -1,39 +1,25 @@
+"use client";
+
 import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
 import { ColumnDef, Row, Table } from "@tanstack/react-table";
-import { EllipsisVertical, PenSquare, Trash2, Brain } from "lucide-react";
-export type Product = {
-  _id: string;
-  name: string;
-  description: string;
-  price: number;
-  emoji: string;
-  isAvailable: boolean;
-  guildId: string;
-  training_status: "not_trained" | "training" | "trained" | "failed";
-  qdrant_point_id: string | null;
-  trained_at: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
+import { EllipsisVertical, PenSquare, Trash2, Eye, Brain } from "lucide-react";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ProductForm } from "./ProductForm";
-import { CreateOrderModal } from "./CreateOrderModal";
-import { ProductDetailsModal } from "./ProductDetailsModal";
-import { useState, useTransition } from "react";
-import { deleteProductAction } from "./product.actions";
-import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
+import { useState, useTransition } from "react";
+import { deleteKnowledgeAction, trainKnowledgeAction } from "./knowledge.actions";
+import { toast } from "sonner";
+import { KnowledgeData } from "@/models/knowledge.dal";
+import { KnowledgeEditorModal } from "./KnowledgeEditorModal";
+import { KnowledgeDetailsModal } from "./KnowledgeDetailsModal";
+
 const trainingStatusConfig = {
   not_trained: { label: "Not Trained", className: "bg-slate-700 text-slate-300" },
   training: { label: "Training...", className: "bg-yellow-900 text-yellow-400" },
@@ -41,7 +27,7 @@ const trainingStatusConfig = {
   failed: { label: "Failed", className: "bg-red-900 text-red-400" },
 };
 
-export const productTableColumns: ColumnDef<Product>[] = [
+export const knowledgeTableColumns: ColumnDef<KnowledgeData>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -67,26 +53,26 @@ export const productTableColumns: ColumnDef<Product>[] = [
     accessorKey: "name",
   },
   {
-    id: "description",
-    header: "Description",
-    accessorKey: "description",
+    id: "source",
+    header: "Source",
+    accessorKey: "source",
+    cell: ({ row }) => {
+      const source = row.original.source;
+      return (
+        <Badge className={source === "uploaded" ? "bg-blue-900 text-blue-400" : "bg-purple-900 text-purple-400"}>
+          {source === "uploaded" ? "Uploaded" : "Created"}
+        </Badge>
+      );
+    },
   },
   {
-    id: "price",
-    header: "Price",
-    accessorKey: "price",
-  },
-  {
-    id: "isAvailable",
-    header: "Is Available",
-    accessorKey: "isAvailable",
-    cell : ({row}) =>{
-      const isAvailabe = !!row.original.isAvailable;
-      if (isAvailabe){
-        return <Badge className="bg-green-900 text-green-400">Yes</Badge>
-      }
-      return <Badge className="bg-red-900 text-red-400">No</Badge>
-    }
+    id: "charCount",
+    header: "Characters",
+    accessorKey: "charCount",
+    cell: ({ row }) => {
+      const count = row.original.charCount;
+      return <span className="text-sm text-slate-400">{count.toLocaleString()} / 12,000</span>;
+    },
   },
   {
     id: "training_status",
@@ -107,30 +93,40 @@ export const productTableColumns: ColumnDef<Product>[] = [
   {
     id: "column_action",
     header: "",
-    cell: ({ row, table }) => <ProductColumnAction row={row} table={table} />,
+    cell: ({ row, table }) => <KnowledgeColumnAction row={row} table={table} />,
   },
 ];
 
-const ProductColumnAction = ({
+const KnowledgeColumnAction = ({
   row,
   table,
 }: {
-  row: Row<Product>;
-  table: Table<Product>;
+  row: Row<KnowledgeData>;
+  table: Table<KnowledgeData>;
 }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isCreateOrderModalOpen, setIsCreateOrderModalOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const handleDelete = () => {
-    if (!confirm("Are you sure you want to delete this product?")) return;
+    if (!confirm("Are you sure you want to delete this knowledge entry?")) return;
     startTransition(async () => {
-      const result = await deleteProductAction(row.original._id, row.original.guildId);
+      const result = await deleteKnowledgeAction(row.original._id, row.original.guildId);
       if (result.success) {
-        toast.success("Product deleted successfully");
+        toast.success("Knowledge entry deleted successfully");
       } else {
-        toast.error("Failed to delete product");
+        toast.error("Failed to delete knowledge entry");
+      }
+    });
+  };
+
+  const handleTrain = () => {
+    startTransition(async () => {
+      const result = await trainKnowledgeAction([row.original._id]);
+      if (result.success) {
+        toast.success("Training started");
+      } else {
+        toast.error("Failed to train");
       }
     });
   };
@@ -146,15 +142,16 @@ const ProductColumnAction = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="bg-slate-800">
           <DropdownMenuItem onClick={() => setIsViewModalOpen(true)}>
+            <Eye className="size-4" />
             View details
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
             <PenSquare className="size-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsCreateOrderModalOpen(true)}>
-            <PenSquare className="size-4" />
-            Create order
+          <DropdownMenuItem onClick={handleTrain} disabled={isPending}>
+            <Brain className="size-4" />
+            Train
           </DropdownMenuItem>
           <DropdownMenuSeparator className="bg-white" />
           <DropdownMenuItem className="text-red-600" onClick={handleDelete} disabled={isPending}>
@@ -163,20 +160,16 @@ const ProductColumnAction = ({
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <ProductForm
-        productData={row.original}
+      <KnowledgeEditorModal
+        knowledgeData={row.original}
         isOpen={isEditModalOpen}
         setIsOpen={setIsEditModalOpen}
+        guildId={row.original.guildId}
       />
-      <CreateOrderModal 
-        isOpen={isCreateOrderModalOpen} 
-        setIsOpen={setIsCreateOrderModalOpen} 
-        productData={row.original} 
-      />
-      <ProductDetailsModal
+      <KnowledgeDetailsModal
         isOpen={isViewModalOpen}
         setIsOpen={setIsViewModalOpen}
-        productData={row.original}
+        knowledgeData={row.original}
       />
     </div>
   );

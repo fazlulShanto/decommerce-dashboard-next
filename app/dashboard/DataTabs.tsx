@@ -8,11 +8,14 @@ import { FC, useEffect } from "react";
 import { useQueryState } from "nuqs";
 import StoreCustomerTable from "./customers";
 import StoreOrdersTable from "./orders";
+import StoreKnowledgeTable from "./knowledge";
 import { OrderData } from "@/models/order.dal";
+import { KnowledgeData } from "@/models/knowledge.dal";
 
 interface DashboardDataTabsProps {
   productList: Product[];
   orderList: OrderData[];
+  knowledgeList: KnowledgeData[];
   guildId: string;
 }
 
@@ -20,6 +23,7 @@ const tabs = [
   { value: "orders", label: "Orders" },
   // { value: "customers", label: "Customers" },
   { value: "products", label: "Products" },
+  { value: "knowledge", label: "Knowledge" },
 ];
 
 const defaultTab = "orders";
@@ -27,6 +31,7 @@ const defaultTab = "orders";
 export const DashboardDataTabs: FC<DashboardDataTabsProps> = ({
   productList,
   orderList,
+  knowledgeList,
   guildId,
 }) => {
   const [tab, setTab] = useQueryState("tab", {
@@ -67,6 +72,10 @@ export const DashboardDataTabs: FC<DashboardDataTabsProps> = ({
 
       <TabsContent value="products" className="mt-0">
         <StoreProductTable data={productList} guildId={guildId} />
+      </TabsContent>
+
+      <TabsContent value="knowledge" className="mt-0">
+        <StoreKnowledgeTable data={knowledgeList} guildId={guildId} />
       </TabsContent>
     </Tabs>
   );

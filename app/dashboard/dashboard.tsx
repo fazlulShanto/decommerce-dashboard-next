@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProcessRow from "@/components/ProcessRow";
 import StorageItem from "@/components/StorageItem";
 import { DecodedToken } from "@/lib/utils";
-import { getOrderList, getProductList } from "./dashboard.service";
+import { getOrderList, getProductList, getKnowledgeList } from "./dashboard.service";
 import StoreProductTable from "./products";
 import { DashboardDataTabs } from "./DataTabs";
 import { Product } from "./products/product-columns";
@@ -34,6 +34,7 @@ export default async function Dashboard() {
   const productList = (await getProductList(userInfo.guildId)) as unknown as Product[];
   const customerList = [];
   const ordersList = await getOrderList(userInfo.guildId);
+  const knowledgeList = await getKnowledgeList(userInfo.guildId);
 
   return (
     <div
@@ -44,7 +45,7 @@ export default async function Dashboard() {
       </div>
       <div className="flex-1 rounded-md overflow-auto px-4">
         <SystemOverview storeName={userInfo?.guildName ?? ""} />
-        <DashboardDataTabs productList={productList} orderList={ordersList} guildId={userInfo.guildId} />
+        <DashboardDataTabs productList={productList} orderList={ordersList} knowledgeList={knowledgeList} guildId={userInfo.guildId} />
       </div>
     </div>
   );
