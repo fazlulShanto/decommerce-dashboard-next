@@ -1,8 +1,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Hexagon } from "lucide-react";
 import ChatSheet from "@/components/ChatSheet";
+import AgentConfigSheet from "@/components/AgentConfigSheet";
+import { AgentConfig } from "@/models/aiAgentConfig.dal";
 
-export default function Header() {
+interface HeaderProps {
+  agentConfig?: AgentConfig;
+  guildId?: string;
+}
+
+export default function Header({ agentConfig, guildId }: HeaderProps) {
   return (
     <header className="flex items-center justify-between">
       <div className="flex items-center space-x-2">
@@ -12,9 +19,12 @@ export default function Header() {
         </span>
       </div>
 
-      <div className="flex items-center space-x-6">
+      <div className="flex items-center space-x-4 sm:space-x-6">
+        {agentConfig && guildId && (
+          <AgentConfigSheet config={agentConfig} guildId={guildId} />
+        )}
         <ChatSheet />
-        <Avatar className="border border-blue-400">
+        <Avatar className="border border-blue-400 hidden sm:block">
           <AvatarImage
             src="https://cdn.discordapp.com/embed/avatars/1.png"
             alt="User"

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
+import { Toaster } from "@/components/ui/sonner"
 
 export const metadata: Metadata = {
   title: "Decommerce Bot Dashboard",
@@ -72,10 +73,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className="dark">
         <NuqsAdapter>{children}</NuqsAdapter>
         <SpeedInsights />
+        <Toaster />
       </body>
     </html>
   );

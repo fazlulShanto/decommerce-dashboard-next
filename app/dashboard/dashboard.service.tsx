@@ -2,7 +2,20 @@ import connectToDatabase from "@/lib/mongodb";
 import { OrderDAL, OrderData, OrderDocument } from "@/models/order.dal";
 import { ProductDAL } from "@/models/product.dal";
 import { KnowledgeDAL, KnowledgeData } from "@/models/knowledge.dal";
+import { AgentConfigDAL } from "@/models/aiAgentConfig.dal";
 import { unstable_cache } from "next/cache";
+
+export const getAgentConfig = unstable_cache(
+  async (guildId) => {
+    await connectToDatabase();
+    return await AgentConfigDAL.getOrCreateAgentConfig(guildId);
+  },
+  ["agent-config"],
+  {
+    revalidate: 60 * 1000,
+    tags: ["agent-config"],
+  },
+);
 
 export const getProductList = unstable_cache(
   async (guildId) => {
