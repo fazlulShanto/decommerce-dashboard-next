@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { PremiumFeatures as PremiumFeaturesType } from '../types';
+import { PremiumFeatures as PremiumFeaturesType } from '../../landingPage/types';
 
 interface PremiumFeaturesProps {
   premiumFeatures: PremiumFeaturesType;

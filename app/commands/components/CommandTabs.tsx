@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CommandCategory, CommandCategories } from '../types';
+import { CommandCategory, CommandCategories } from '../../landingPage/types';
 import { CommandAccordion } from './CommandAccordion';
 
 interface CommandTabsProps {

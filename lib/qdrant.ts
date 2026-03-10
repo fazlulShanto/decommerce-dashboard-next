@@ -90,3 +90,26 @@ export async function deleteVectorsByPayloadMatch(key: string, value: string) {
         console.error("Error deleting vectors from Qdrant:", error);
     }
 }
+
+export async function searchVectors(
+    vector: number[],
+    limit: number = 20,
+): Promise<any[]> {
+    const client = getQdrantClient();
+    try {
+        const exists = await client.collectionExists(COLLECTION_NAME);
+        if (!exists.exists) return [];
+
+        const searchResult = await client.search(COLLECTION_NAME, {
+            vector: vector,
+            limit: limit,
+            with_payload: true,
+            with_vector: false,
+        });
+
+        return searchResult;
+    } catch (error) {
+        console.error("Error searching vectors in Qdrant:", error);
+        return [];
+    }
+}

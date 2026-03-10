@@ -48,6 +48,7 @@ export default function SystemOverview({ storeName }: { storeName: string }) {
             title="Total Products"
             value={cpuUsage}
             icon={Package}
+            trend="stable"
             color="cyan"
             detail=""
           />

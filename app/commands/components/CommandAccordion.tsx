@@ -12,13 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Command, CommandCategory, PermissionsRecord } from "../types";
+import { Command, CommandCategory, PermissionsRecord } from "../../landingPage/types";
 import { faqData } from "@/lib/faqData";
 import { CommandDetails } from "./CommandDetails";
 
 interface CommandAccordionProps {
   category: string;
-  commandCategory: CommandCategory;
+  commandCategory: any;
   filteredCommands: Command[];
   searchQuery: string;
 }

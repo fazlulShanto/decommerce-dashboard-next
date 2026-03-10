@@ -1,5 +1,5 @@
 import React from 'react';
-import { Command } from '../types';
+import { Command } from '../../landingPage/types';
 
 interface CommandDetailsProps {
   command: Command;
@@ -27,7 +27,7 @@ export const CommandDetails = ({ command, renderPermissions }: CommandDetailsPro
                 Required Permissions
               </h4>
               <div className="flex flex-wrap">
-                {renderPermissions(command.permissions)}
+                {renderPermissions(command.permissions || [])}
               </div>
             </div>
             

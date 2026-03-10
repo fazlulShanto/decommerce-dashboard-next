@@ -44,7 +44,7 @@ const TooltipContent = React.forwardRef<
 ));
 
 const TooltipProvider = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.TooltipProvider>,
+  any,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.TooltipProvider>
 >(({ children, delayDuration = 0, ...props }, _ref) => (
   <TooltipPrimitive.TooltipProvider delayDuration={delayDuration} {...props}>
@@ -57,7 +57,7 @@ const TooltipProvider = React.forwardRef<
 ));
 
 const TooltipProviderCustomised = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.TooltipProvider>,
+  any,
   TooltipProviderCustomProps
 >(
   (

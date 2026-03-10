@@ -27,7 +27,7 @@ export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table }) => {
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      await handleBulkDelete();
+      await handleDelete();
       toast({
         // @ts-expect-error just bad type defination!
         title: <p className="text-green-400">{t("Delete Successful")}</p>,

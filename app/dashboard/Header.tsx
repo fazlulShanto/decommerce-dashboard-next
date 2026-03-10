@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Hexagon } from "lucide-react";
+import ChatSheet from "@/components/ChatSheet";
 
 export default function Header() {
   return (
@@ -12,6 +13,7 @@ export default function Header() {
       </div>
 
       <div className="flex items-center space-x-6">
+        <ChatSheet />
         <Avatar className="border border-blue-400">
           <AvatarImage
             src="https://cdn.discordapp.com/embed/avatars/1.png"
