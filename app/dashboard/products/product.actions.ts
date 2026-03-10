@@ -3,7 +3,7 @@
 import connectToDatabase from "@/lib/mongodb";
 import { ProductDAL, ProductModel } from "@/models/product.dal";
 import { revalidateTag } from "next/cache";
-import { generateEmbeddings } from "@/lib/jina";
+import { generateEmbeddings } from "@/lib/embedding";
 import { upsertVector, deleteVectorsByPayloadMatch } from "@/lib/qdrant";
 
 export async function createProductAction(data: any, guildId: string) {
@@ -84,7 +84,7 @@ export async function trainProductsAction(productIds: string[]) {
                 // Prepare text for embedding: name + description (relevant fields only)
                 const trainingText = `Product: ${product.name}\nDescription: ${product.description || ""}`;
 
-                // Call Jina AI embedding API
+                // Generate embeddings via Vercel AI SDK
                 const embeddings = await generateEmbeddings(trainingText);
 
                 if (product.qdrant_point_id) {

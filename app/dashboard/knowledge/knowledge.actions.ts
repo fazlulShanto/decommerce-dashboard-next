@@ -3,7 +3,7 @@
 import connectToDatabase from "@/lib/mongodb";
 import { KnowledgeDAL, KnowledgeModel } from "@/models/knowledge.dal";
 import { revalidateTag } from "next/cache";
-import { generateEmbeddings } from "@/lib/jina";
+import { generateEmbeddings } from "@/lib/embedding";
 import { upsertVector, deleteVectorsByPayloadMatch } from "@/lib/qdrant";
 
 export async function createKnowledgeAction(data: {
@@ -116,7 +116,7 @@ export async function trainKnowledgeAction(knowledgeIds: string[]) {
         );
         revalidateTag("knowledge-list");
 
-        // Actually embed knowledge data into Qdrant using Jina AI
+        // Embed knowledge data into Qdrant via Vercel AI SDK
         for (const id of knowledgeIds) {
             try {
                 const knowledge = await KnowledgeDAL.getKnowledgeById(id);
@@ -124,7 +124,7 @@ export async function trainKnowledgeAction(knowledgeIds: string[]) {
 
                 const trainingText = `Title: ${knowledge.name}\n${knowledge.content}`;
 
-                // Call Jina AI embedding API and upsert to Qdrant
+                // Generate embeddings and upsert vectors to Qdrant
                 const embeddings = await generateEmbeddings(trainingText);
 
                 if (knowledge.qdrant_point_id) {

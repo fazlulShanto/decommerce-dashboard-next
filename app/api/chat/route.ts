@@ -1,7 +1,7 @@
 import { generateText, stepCountIs, tool, userModelMessageSchema } from "ai";
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { z } from "zod";
-import { generateEmbeddings, rerankDocuments } from "@/lib/jina";
+import { generateEmbeddings, rerankDocuments } from "@/lib/embedding";
 import { searchVectors } from "@/lib/qdrant";
 
 // Define the Ollama provider using the Vercel AI SDK
@@ -77,9 +77,8 @@ const knowledgeLookupTool = tool({
             console.log(
                 `[Tool: knowledge_look_up] Reranking ${documents.length} documents...`,
             );
-            // Rerank using Jina AI to get the top 3 most relevant context
+            // Rerank via Vercel AI SDK to get the top 3 most relevant context
             const rerankedDocs = await rerankDocuments(query, documents, 3);
-
             return { result: rerankedDocs.join("\n\n---\n\n") };
         } catch (err) {
             console.error("[Tool: knowledge_look_up] Error:", err);
@@ -125,9 +124,9 @@ export async function POST(req: Request) {
         const fullMessages = parsedMessages.length > 0 ? parsedMessages : [];
         // Generate Text using qwen3-next:80b
         const result = await generateText({
-            model: ollamaProvider("gpt-oss:120b"),
+            // model: ollamaProvider("gpt-oss:120b"),
+            model: ollamaProvider("qwen3-next:80b"),
             system: systemPrompt,
-            // model: ollamaProvider("qwen3-next:80b"),
             messages: fullMessages as any,
             tools: {
                 knowledge_look_up: knowledgeLookupTool,

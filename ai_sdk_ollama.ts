@@ -2,7 +2,7 @@ import { z } from "zod";
 import { generateText, tool, stepCountIs, userModelMessageSchema } from "ai";
 
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
-import { generateEmbeddings, rerankDocuments } from "./lib/jina";
+import { generateEmbeddings, rerankDocuments } from "./lib/embedding";
 import { searchVectors } from "./lib/qdrant";
 
 const ollamaProvider = createOpenAICompatible({
@@ -78,7 +78,7 @@ const knowledgeLookupTool = tool({
             console.log(
                 `[Tool: knowledge_look_up] Reranking ${documents.length} documents...`,
             );
-            // Rerank using Jina AI to get the top 3 most relevant context
+            // Rerank via Vercel AI SDK to get the top 3 most relevant context
             const rerankedDocs = await rerankDocuments(query, documents, 3);
 
             return { result: rerankedDocs.join("\n\n---\n\n") };
@@ -95,14 +95,19 @@ const main = async () => {
     const systemPrompt = `
         You are a helpful AI assistant for the Decommerce dashboard.
         You have a tool called 'knowledge_look_up' to search the knowledge base. 
-        CRITICAL: When you use the 'knowledge_look_up' tool, you MUST ALWAYS provide the 'query' argument as a string summarizing the user's question. 
-        If you do not know the answer, use the knowledge tool with a specific search phrase. Always provide concise and helpful responses.`;
-
+        - keep your responses concise and relevant to the user's query.
+        - Always use the 'knowledge_look_up' tool when the user asks about specific products, store policies, or historical information.
+        - CRITICAL: When you use the 'knowledge_look_up' tool, you MUST ALWAYS provide the 'query' argument as a string summarizing the user's question. 
+        If you do not know the answer, use the knowledge tool with a specific search phrase. Always provide concise and helpful responses.
+        - never make up information. If you don't know, use the tool to find out, or say politely you don't know.
+        - don't not expose the internal workings of the tool or mention that it's a tool. Just use it when needed to find information and then respond to the user based on what you find.
+        - don't response out of the scope of your role. if a query is not related to the dashboard, products, store policies, or historical information, politely tell the user you can only answer questions related to the dashboard and suggest them to ask general questions to a general assistant.
+        `;
     // Ensure we start with system prompt
     const fullMessages: any = [
         userModelMessageSchema.parse({
             role: "user",
-            content: "hi,what is the return policy",
+            content: "hi, do you fix dashboard?",
         }),
     ];
 
@@ -118,8 +123,8 @@ const main = async () => {
         // prompt: "hi,what is the return policy",
     });
 
-    console.log("🏵️".repeat(20));
-    console.log("tool calls", result);
+    // console.log("🏵️".repeat(20));
+    // console.log("tool calls", result);
     console.log("✅".repeat(20));
     console.log(result.text);
 };

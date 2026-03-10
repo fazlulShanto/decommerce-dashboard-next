@@ -17,7 +17,7 @@ const getQdrantClient = () => {
 };
 
 const COLLECTION_NAME = "decommerce_knowledge";
-const VECTOR_SIZE = 1024; // jina-embeddings-v5-text-small output dimension
+const VECTOR_SIZE = Number(process.env.EMBEDDING_VECTOR_SIZE ?? 768); // text-embedding-004 with outputDimensionality=768
 
 export async function ensureCollectionExists() {
     const client = getQdrantClient();
@@ -103,6 +103,7 @@ export async function searchVectors(
         const searchResult = await client.search(COLLECTION_NAME, {
             vector: vector,
             limit: limit,
+            score_threshold: 0.5, // Optional: set a minimum similarity score threshold
             with_payload: true,
             with_vector: false,
         });
