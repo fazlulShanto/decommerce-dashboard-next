@@ -24,34 +24,27 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { OrderData } from "@/models/order.dal";
+import { deleteBulkOrderAction } from "./order.actions";
 
 interface AgentTableToolbarProps {
   table: ReturnType<typeof useReactTable<OrderData>>;
+  guildId: string;
 }
 
-export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table }) => {
-  const isSelectionMode = !!Object.keys({}).length;
+export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table, guildId }) => {
+  const isSelectionMode = !!Object.keys(table.getState().rowSelection).length;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
+
   async function deleteMultipleItems(itemIds: string[]) {
     try {
-      const response = await fetch("/api/orders", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ids: itemIds }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const result = await deleteBulkOrderAction(itemIds);
+      if (!result.success) {
+        throw new Error(result.error);
       }
-      const result = await response.json();
-      console.log(`${result} items deleted`);
       return result;
     } catch (error) {
       console.error("Error deleting items:", error);
@@ -132,7 +125,9 @@ export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table }) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="w-full flex items-center justify-between">
-        <div>{renderBulkDeleteOption()}</div>
+        <div className="flex items-center gap-2">
+          {isSelectionMode && renderBulkDeleteOption()}
+        </div>
       </div>
 
       <AlertDialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>

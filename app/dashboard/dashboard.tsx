@@ -8,6 +8,7 @@ import { DecodedToken } from "@/lib/utils";
 import { getOrderList, getProductList } from "./dashboard.service";
 import StoreProductTable from "./products";
 import { DashboardDataTabs } from "./DataTabs";
+import { Product } from "./products/product-columns";
 
 // Function to get user info from headers
 async function getUserInfo(): Promise<DecodedToken | null> {
@@ -30,7 +31,7 @@ export default async function Dashboard() {
 
   if (!userInfo) return null;
 
-  const productList = await getProductList(userInfo.guildId);
+  const productList = (await getProductList(userInfo.guildId)) as unknown as Product[];
   const customerList = [];
   const ordersList = await getOrderList(userInfo.guildId);
 
@@ -43,7 +44,7 @@ export default async function Dashboard() {
       </div>
       <div className="flex-1 rounded-md overflow-auto px-4">
         <SystemOverview storeName={userInfo?.guildName ?? ""} />
-        <DashboardDataTabs productList={productList} orderList={ordersList} />
+        <DashboardDataTabs productList={productList} orderList={ordersList} guildId={userInfo.guildId} />
       </div>
     </div>
   );

@@ -14,20 +14,23 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { type Product } from "./product-columns";
 import { useReactTable } from "@tanstack/react-table";
+import { ProductForm } from "./ProductForm";
 
 interface AgentTableToolbarProps {
   table: ReturnType<typeof useReactTable<Product>>;
+  guildId: string;
 }
 
-export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table }) => {
-  const isSelectionMode = !!Object.keys({}).length;
+export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table, guildId }) => {
+  const isSelectionMode = !!Object.keys(table.getState().rowSelection).length;
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      await handleBulkDelete();
+      // await handleBulkDelete();
       toast({
         // @ts-expect-error just bad type defination!
         title: <p className="text-green-400">{t("Delete Successful")}</p>,
@@ -80,8 +83,23 @@ export const ProductTableToolbar: FC<AgentTableToolbarProps> = ({ table }) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="w-full flex items-center justify-between">
-        <div>{renderBulkDeleteOption()}</div>
+        <div className="flex items-center gap-2">
+          {isSelectionMode && renderBulkDeleteOption()}
+          <Button
+            size="sm"
+            className="flex items-center gap-2"
+            onClick={() => setIsCreateModalOpen(true)}
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create Product</span>
+          </Button>
+        </div>
       </div>
+      <ProductForm
+        isOpen={isCreateModalOpen}
+        setIsOpen={setIsCreateModalOpen}
+        guildId={guildId}
+      />
     </div>
   );
 };

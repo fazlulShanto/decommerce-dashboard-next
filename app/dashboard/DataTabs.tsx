@@ -13,6 +13,7 @@ import { OrderData } from "@/models/order.dal";
 interface DashboardDataTabsProps {
   productList: Product[];
   orderList: OrderData[];
+  guildId: string;
 }
 
 const tabs = [
@@ -26,6 +27,7 @@ const defaultTab = "orders";
 export const DashboardDataTabs: FC<DashboardDataTabsProps> = ({
   productList,
   orderList,
+  guildId,
 }) => {
   const [tab, setTab] = useQueryState("tab", {
     defaultValue: defaultTab,
@@ -56,7 +58,7 @@ export const DashboardDataTabs: FC<DashboardDataTabsProps> = ({
       </div>
 
       <TabsContent value="orders" className="mt-0">
-        <StoreOrdersTable data={orderList} />
+        <StoreOrdersTable data={orderList} guildId={guildId} />
       </TabsContent>
       {/*
       <TabsContent value="customers" className="mt-0">
@@ -64,7 +66,7 @@ export const DashboardDataTabs: FC<DashboardDataTabsProps> = ({
       </TabsContent> */}
 
       <TabsContent value="products" className="mt-0">
-        <StoreProductTable data={productList} />
+        <StoreProductTable data={productList} guildId={guildId} />
       </TabsContent>
     </Tabs>
   );
