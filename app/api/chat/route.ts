@@ -12,6 +12,7 @@ const ollamaProvider = createOpenAICompatible({
     baseURL: "https://ollama.com/v1/", // Ollama Cloud API
     includeUsage: true,
 });
+
 const knowledgeLookupTool = tool({
     description:
         "Search for knowledge, documents, and product context from the vector database. You MUST use this tool when users ask questions about specific items, store policies, or historical information.",
@@ -80,6 +81,7 @@ const knowledgeLookupTool = tool({
             );
             // Rerank via Vercel AI SDK to get the top 3 most relevant context
             const rerankedDocs = await rerankDocuments(query, documents, 3);
+            console.log("✅Reranked documents:", rerankedDocs);
             return { result: rerankedDocs.join("\n\n---\n\n") };
         } catch (err) {
             console.error("[Tool: knowledge_look_up] Error:", err);
@@ -89,6 +91,19 @@ const knowledgeLookupTool = tool({
         }
     },
 });
+
+// The knowledge lookup tool configuration
+const defaultSystemPrompt = `
+        You are a helpful AI assistant for the Decommerce dashboard.
+        You have a tool called 'knowledge_look_up' to search the knowledge base. 
+        - keep your responses concise and relevant to the user's query.
+        - Always use the 'knowledge_look_up' tool when the user asks about specific products, store policies, or historical information.
+        - CRITICAL: When you use the 'knowledge_look_up' tool, you MUST ALWAYS provide the 'query' argument as a string summarizing the user's question. 
+        If you do not know the answer, use the knowledge tool with a specific search phrase. Always provide concise and helpful responses.
+        - never make up information. If you don't know, use the tool to find out, or say politely you don't know.
+        - don't not expose the internal workings of the tool or mention that it's a tool. Just use it when needed to find information and then respond to the user based on what you find.
+        `;
+
 export async function POST(req: Request) {
     try {
         const { messages, guildId } = await req.json();
@@ -120,18 +135,6 @@ export async function POST(req: Request) {
             // );
         }
 
-        // The knowledge lookup tool configuration
-        const defaultSystemPrompt = `
-        You are a helpful AI assistant for the Decommerce dashboard.
-        You have a tool called 'knowledge_look_up' to search the knowledge base. 
-        - keep your responses concise and relevant to the user's query.
-        - Always use the 'knowledge_look_up' tool when the user asks about specific products, store policies, or historical information.
-        - CRITICAL: When you use the 'knowledge_look_up' tool, you MUST ALWAYS provide the 'query' argument as a string summarizing the user's question. 
-        If you do not know the answer, use the knowledge tool with a specific search phrase. Always provide concise and helpful responses.
-        - never make up information. If you don't know, use the tool to find out, or say politely you don't know.
-        - don't not expose the internal workings of the tool or mention that it's a tool. Just use it when needed to find information and then respond to the user based on what you find.
-        `;
-
         const systemPrompt = agentConfig?.systemPrompt || defaultSystemPrompt;
         const modelName = agentConfig?.chatModel || "qwen3-next:80b";
         const temperature = agentConfig?.temperature ?? 0.5;
@@ -149,6 +152,8 @@ export async function POST(req: Request) {
             temperature: temperature,
             stopWhen: stepCountIs(5),
         });
+
+        console.log("✅Generated text:", result);
 
         return new Response(
             JSON.stringify({

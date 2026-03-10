@@ -91,6 +91,18 @@ const knowledgeLookupTool = tool({
     },
 });
 
+export const weatherTool = tool({
+    description: "Get the weather in a location",
+    inputSchema: z.object({
+        location: z.string().describe("The location to get the weather for"),
+    }),
+    // location below is inferred to be a string:
+    execute: async ({ location }) => ({
+        location,
+        temperature: 72 + Math.floor(Math.random() * 21),
+    }),
+});
+
 const main = async () => {
     const systemPrompt = `
         You are a helpful AI assistant for the Decommerce dashboard.
@@ -107,7 +119,7 @@ const main = async () => {
     const fullMessages: any = [
         userModelMessageSchema.parse({
             role: "user",
-            content: "hi, do you fix dashboard?",
+            content: "hi, temperature in New York?",
         }),
     ];
 
@@ -116,7 +128,8 @@ const main = async () => {
         system: systemPrompt,
 
         tools: {
-            knowledge_look_up: knowledgeLookupTool,
+            // knowledge_look_up: knowledgeLookupTool,
+            weatherTool,
         },
         messages: fullMessages,
         stopWhen: stepCountIs(5),
@@ -126,6 +139,8 @@ const main = async () => {
     // console.log("🏵️".repeat(20));
     // console.log("tool calls", result);
     console.log("✅".repeat(20));
+    console.log(result.toolCalls);
+    console.log(result.toolResults);
     console.log(result.text);
 };
 
